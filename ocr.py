@@ -10,16 +10,18 @@ import pytesseract
 import argparse
 
 def download_pdf(url, output_path):
+    """Download a PDF file from a URL."""
     response = requests.get(url)
     with open(output_path, 'wb') as pdf_file:
         pdf_file.write(response.content)
 
 def process_pdf_to_images(pdf_path, output_dir):
+    """Convert a PDF to a series of images."""
     images = convert_from_path(pdf_path, dpi=300)
     for i, image in enumerate(images):
         image.save(os.path.join(output_dir, f'page_{i+1}.jpg'), 'JPEG')
-
 def perform_ocr(image_path, output_path):
+    """Perform OCR on an image, add bounding boxes, and save processed image."""
     # Load the input image
     image = Image.open(image_path)
 
@@ -56,9 +58,27 @@ def perform_ocr(image_path, output_path):
     image.save(output_path)
     print(f"Processed image saved as {output_path}")
 
+    # Perform text conversion from old Bulgarian to new Bulgarian
+    text = convert_to_new_bulgarian(text)
+
+    return text
+
+# Define a function to convert old Bulgarian to new Bulgarian
+def convert_to_new_bulgarian(text):
+    # Define character replacements
+    replacements = [
+        (r'([бвгджзклмнпрстфхцчш])ж([бвгджзклмнпрстфхцчш])', r'\1ъ\2'),  # Replace ж with ъ between certain consonants
+        (r'ѣ', 'е'),  # Replace ѣ with е
+    ]
+
+    # Apply the replacements
+    for pattern, replacement in replacements:
+        text = re.sub(pattern, replacement, text)
+
     return text
 
 def main(json_file, delete_files):
+    """Main function to download, process, and OCR PDF files."""
     with open(json_file, 'r') as file:
         data = json.load(file)
 
