@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import requests
 import pandas as pd
@@ -67,8 +68,10 @@ def perform_ocr(image_path, output_path):
 def convert_to_new_bulgarian(text):
     # Define character replacements
     replacements = [
-        (r'([бвгджзклмнпрстфхцчш])ж([бвгджзклмнпрстфхцчш])', r'\1ъ\2'),  # Replace ж with ъ between certain consonants
-        (r'ѣ', 'е'),  # Replace ѣ with е
+        (r'([бвгджзклмнпрстфхцчшщ])ж([бвгджзклмнпрстфхцчшщ])', r'\1ъ\2', re.IGNORECASE),
+        (r'ѣ', 'е', re.IGNORECASE),
+        (r'ъ ', '', re.IGNORECASE),
+        (r'ь ', '', re.IGNORECASE),
     ]
 
     # Apply the replacements
