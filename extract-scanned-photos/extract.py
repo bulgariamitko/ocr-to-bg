@@ -49,7 +49,7 @@ def main():
 
             # Save each extracted image to the 'extracted' directory
             for idx, img in enumerate(extracted_images):
-                output_path = os.path.join('extracted', f'extracted_{idx}_{file_name}')
+                output_path = os.path.join('extracted', f'{file_name}_extracted_{idx}')
                 cv2.imwrite(output_path, img)
                 print(f'Saved {output_path}')
 
